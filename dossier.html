@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASC · Dossier territoriale per istanza MASE (art. 13 L. 349/1986)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F1E6; --paper-2:#FBF8F0; --surface:#FFFDF7;
+  --ink:#221E16; --muted:#6E6452; --faint:#9A9079;
+  --green:#244C36; --green-2:#2E6044; --green-soft:#EAF0E8;
+  --terra:#B5562C; --terra-soft:#F5E5DA;
+  --amber:#B5832A; --amber-soft:#F6EBD2;
+  --line:#E2D9C6; --line-strong:#CFC4AC;
+  --ok:#3E7C52; --warn:#C08A2E; --err:#B5562C;
+  --shadow:0 1px 2px rgba(34,30,22,.06),0 8px 24px rgba(34,30,22,.07);
+  --shadow-lg:0 12px 40px rgba(34,30,22,.16);
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Libre Franklin",system-ui,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(46,96,68,.05), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(181,86,44,.045), transparent 45%);
+  min-height:100vh;
+}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");}
+h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif;font-weight:600;line-height:1.15;margin:0}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:.92rem}
+a{color:var(--green-2)}
+
+/* ===== Layout ===== */
+.app{position:relative;z-index:1;display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+@media(max-width:900px){.app{grid-template-columns:1fr}}
+
+/* ===== Sidebar ===== */
+.side{
+  background:linear-gradient(170deg,#1C3A29,#244C36 60%,#21442F);
+  color:#EDE6D6;padding:26px 22px 30px;position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid rgba(0,0,0,.2);
+}
+@media(max-width:900px){.side{position:static;height:auto}}
+.brand{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+.seal{width:42px;height:42px;border-radius:50%;border:2px solid #C9A24B;display:grid;place-items:center;
+  font-family:"Fraunces";font-weight:700;color:#E8DcB6;font-size:1.05rem;flex:none;
+  background:radial-gradient(circle at 35% 30%,rgba(201,162,75,.22),transparent)}
+.brand .t{font-family:"Fraunces";font-size:1.18rem;font-weight:600;letter-spacing:.3px}
+.brand .s{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#A9BCA8}
+.side .lead{font-size:.78rem;color:#B9C8B5;margin:14px 0 22px;line-height:1.45}
+.nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.nav li{padding:0}
+.nav button{
+  width:100%;text-align:left;background:transparent;border:none;color:#D6DDCD;
+  padding:9px 12px;border-radius:10px;display:flex;align-items:center;gap:11px;
+  font-size:.86rem;font-weight:500;transition:.18s;position:relative;
+}
+.nav button:hover{background:rgba(255,255,255,.06)}
+.nav button.active{background:rgba(201,162,75,.16);color:#FBF6E7}
+.nav .ix{width:23px;height:23px;border-radius:7px;display:grid;place-items:center;font-size:.74rem;font-weight:700;
+  background:rgba(255,255,255,.1);flex:none;font-family:"Fraunces"}
+.nav button.active .ix{background:#C9A24B;color:#23311E}
+.nav .dot{margin-left:auto;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);flex:none}
+.nav .dot.ok{background:#7FBE8F}
+.nav .dot.partial{background:#E0B65A}
+.side .readybox{margin-top:24px;background:rgba(0,0,0,.18);border:1px solid rgba(201,162,75,.25);border-radius:12px;padding:15px}
+.readybox .lab{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:#A9BCA8}
+.gauge{height:9px;border-radius:6px;background:rgba(255,255,255,.12);margin:9px 0 6px;overflow:hidden}
+.gauge i{display:block;height:100%;background:linear-gradient(90deg,#C9A24B,#7FBE8F);width:0;transition:width .5s ease}
+.readybox .pc{font-family:"Fraunces";font-size:1.5rem;font-weight:600;color:#FBF6E7}
+.readybox .pc small{font-size:.7rem;font-family:"Libre Franklin";color:#A9BCA8;font-weight:500}
+.savestate{margin-top:16px;font-size:.7rem;color:#9FB29C;display:flex;align-items:center;gap:7px}
+.savestate .pip{width:7px;height:7px;border-radius:50%;background:#7FBE8F;box-shadow:0 0 0 3px rgba(127,190,143,.2)}
+
+/* ===== Main ===== */
+.main{padding:0;min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:20;background:rgba(246,241,230,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:14px 34px;display:flex;align-items:center;gap:16px;flex-wrap:wrap
+}
+.topbar .crumb{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.topbar .ident{font-family:"Fraunces";font-size:1.02rem;font-weight:600}
+.topbar .ident .reg{color:var(--terra)}
+.topbar .actions{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:8px 15px;border-radius:9px;
+  font-size:.8rem;font-weight:600;transition:.16s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--green-2);color:var(--green-2);transform:translateY(-1px)}
+.btn.primary{background:var(--green);color:#F6F1E6;border-color:var(--green)}
+.btn.primary:hover{background:var(--green-2);color:#fff}
+.btn.terra{background:var(--terra);color:#fff;border-color:var(--terra)}
+.btn.terra:hover{background:#9d4a25;color:#fff}
+.btn.ghost{background:transparent}
+.btn.sm{padding:5px 10px;font-size:.74rem}
+
+.wrap{max-width:920px;margin:0 auto;padding:30px 34px 90px}
+@media(max-width:600px){.wrap,.topbar{padding-left:18px;padding-right:18px}}
+
+.section{display:none;animation:rise .4s ease both}
+.section.active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.sec-head{margin-bottom:22px}
+.sec-head .kicker{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--terra);font-weight:700;margin-bottom:7px}
+.sec-head h2{font-size:2.05rem;letter-spacing:-.5px}
+.sec-head .desc{color:var(--muted);font-size:.95rem;max-width:64ch;margin-top:9px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:18px}
+.card.tinted{background:linear-gradient(180deg,var(--paper-2),var(--surface))}
+.card .ct{font-family:"Fraunces";font-size:1.12rem;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:9px}
+.card .cd{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+
+.field{margin-bottom:15px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:.76rem;font-weight:600;letter-spacing:.03em;color:var(--ink);margin-bottom:6px}
+.field label .opt{color:var(--faint);font-weight:500;text-transform:none;letter-spacing:0}
+.field .hint{font-size:.72rem;color:var(--faint);margin-top:5px}
+input[type=text],input[type=date],input[type=email],input[type=number],select,textarea{
+  width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:#fff;color:var(--ink);
+  transition:.16s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green-2);box-shadow:0 0 0 3px rgba(46,96,68,.12)}
+textarea{resize:vertical;min-height:76px;line-height:1.5}
+.row{display:grid;gap:14px}
+.row.c2{grid-template-columns:1fr 1fr}
+.row.c3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:620px){.row.c2,.row.c3{grid-template-columns:1fr}}
+
+.check{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+  background:var(--paper-2);margin-bottom:9px;cursor:pointer;transition:.15s}
+.check:hover{border-color:var(--line-strong)}
+.check input{margin-top:2px;width:17px;height:17px;accent-color:var(--green);flex:none}
+.check .x{font-size:.84rem}
+.check .x b{display:block;font-weight:600}
+.check .x span{color:var(--muted);font-size:.78rem}
+
+/* requirement banner */
+.req{display:flex;gap:14px;background:var(--green-soft);border:1px solid #CFE0CB;border-left:4px solid var(--green-2);
+  border-radius:11px;padding:15px 17px;margin-bottom:22px}
+.req .ico{font-size:1.3rem;flex:none}
+.req h4{font-family:"Fraunces";font-size:.98rem;margin-bottom:4px;color:var(--green)}
+.req p{font-size:.82rem;color:#3a5240;margin:0}
+.req.amber{background:var(--amber-soft);border-color:#E7D29A;border-left-color:var(--amber)}
+.req.amber h4{color:#7d5a14}.req.amber p{color:#6d5217}
+
+/* activity blocks */
+.year-block{margin-bottom:22px}
+.year-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.year-head .yr{font-family:"Fraunces";font-size:1.5rem;font-weight:600}
+.year-head .badge{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--terra-soft);color:var(--terra)}
+.year-head .badge.ok{background:var(--green-soft);color:var(--green-2)}
+.year-head .line{flex:1;height:1px;background:var(--line)}
+.act{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:11px;overflow:hidden}
+.act-top{display:flex;align-items:center;gap:11px;padding:13px 15px;cursor:pointer}
+.act-top:hover{background:var(--paper-2)}
+.act-top .ttl{font-weight:600;font-size:.9rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-top .ttl.empty{color:var(--faint);font-style:italic;font-weight:500}
+.act-top .docpill{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--terra-soft);color:var(--terra);flex:none}
+.act-top .docpill.ok{background:var(--green-soft);color:var(--green-2)}
+.act-top .chev{transition:.2s;color:var(--faint);flex:none}
+.act.open .chev{transform:rotate(90deg)}
+.act-body{display:none;padding:4px 15px 17px;border-top:1px solid var(--line)}
+.act.open .act-body{display:block}
+.doc-list{margin-top:6px}
+.doc{display:flex;gap:9px;align-items:center;padding:9px 11px;border:1px dashed var(--line-strong);border-radius:9px;margin-bottom:8px;background:var(--paper-2)}
+.doc .dt{font-size:.78rem;flex:1;min-width:0}
+.doc .dt b{display:block;font-weight:600}
+.doc .fname{font-family:ui-monospace,monospace;font-size:.7rem;color:var(--terra);word-break:break-all}
+.mini{border:none;background:transparent;color:var(--faint);font-size:1rem;line-height:1;padding:4px;border-radius:6px}
+.mini:hover{color:var(--err);background:var(--terra-soft)}
+.addbtn{border:1px dashed var(--line-strong);background:transparent;color:var(--green-2);width:100%;padding:10px;border-radius:10px;
+  font-weight:600;font-size:.82rem;transition:.15s}
+.addbtn:hover{background:var(--green-soft);border-color:var(--green-2)}
+
+/* readiness checklist (summary) */
+.rchk{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;border-radius:11px;border:1px solid var(--line);margin-bottom:10px;background:var(--surface)}
+.rchk .st{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;flex:none;color:#fff}
+.rchk.ok .st{background:var(--ok)}.rchk.no .st{background:var(--line-strong);color:var(--ink)}
+.rchk .rt b{display:block;font-weight:600;font-size:.88rem}
+.rchk .rt span{font-size:.78rem;color:var(--muted)}
+
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.export-grid{grid-template-columns:1fr}}
+.exp{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);text-align:left}
+.exp .ei{font-size:1.5rem}
+.exp h4{font-family:"Fraunces";margin:8px 0 4px;font-size:1.02rem}
+.exp p{font-size:.8rem;color:var(--muted);margin:0 0 14px}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#F6F1E6;
+  padding:12px 20px;border-radius:11px;font-size:.84rem;font-weight:500;box-shadow:var(--shadow-lg);z-index:99;opacity:0;transition:.35s;display:flex;gap:9px;align-items:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+.foot-nav{display:flex;justify-content:space-between;margin-top:26px;gap:12px}
+
+.tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:20px;text-transform:uppercase}
+.tag.nat{background:var(--amber-soft);color:#7d5a14}
+.tag.reg{background:var(--green-soft);color:var(--green-2)}
+
+ul.clean{margin:0;padding-left:18px}
+ul.clean li{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+ul.clean li b{color:var(--ink)}
+.divider{height:1px;background:var(--line);margin:20px 0}
+details.help{border:1px solid var(--line);border-radius:11px;background:var(--paper-2);padding:0 16px;margin-bottom:14px}
+details.help summary{cursor:pointer;padding:13px 0;font-weight:600;font-size:.86rem;list-style:none;display:flex;gap:9px;align-items:center}
+details.help summary::-webkit-details-marker{display:none}
+details.help summary .pp{transition:.2s;color:var(--terra)}
+details.help[open] summary .pp{transform:rotate(90deg)}
+details.help .hc{padding:0 0 15px;font-size:.83rem;color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.83rem;margin-top:6px}
+.kv dt{color:var(--faint)}.kv dd{margin:0;font-weight:500}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <div class="seal">ASC</div>
+      <div>
+        <div class="t">Dossier territoriale</div>
+        <div class="s">Istanza MASE · L. 349/86</div>
+      </div>
+    </div>
+    <p class="lead">Strumento di raccolta dati per i Comitati regionali e provinciali, a supporto dell'istanza di riconoscimento come Associazione di protezione ambientale (art. 13 L. 349/1986).</p>
+    <ul class="nav" id="nav"></ul>
+    <div class="readybox">
+      <div class="lab">Completezza dossier</div>
+      <div class="gauge"><i id="gauge"></i></div>
+      <div class="pc"><span id="pctxt">0</span>%<small id="pcsub"> · da avviare</small></div>
+    </div>
+    <div class="savestate"><span class="pip"></span><span id="saveTxt">Salvataggio automatico attivo</span></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="crumb">Comitato territoriale</div>
+        <div class="ident" id="identTop">Regione <span class="reg">— da impostare</span></div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost sm" id="resetBtn">↺ Azzera</button>
+        <button class="btn sm" onclick="go('riepilogo')">✓ Verifica</button>
+        <button class="btn primary sm" id="exportBtn" onclick="go('export')">⤓ Esporta dossier</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <!-- 0 · INTRO -->
+      <section class="section active" data-sec="intro">
+        <div class="sec-head">
+          <div class="kicker">Guida operativa</div>
+          <h2>Prepariamo insieme il fascicolo della tua Regione</h2>
+          <p class="desc">ASC presenterà al Ministero dell'Ambiente e della Sicurezza Energetica (MASE) l'istanza per essere riconosciuta come associazione di protezione ambientale. Per ottenere il riconoscimento occorre dimostrare la presenza stabile e l'attività ambientale in <b>almeno cinque regioni</b>, per ciascun anno del <b>triennio precedente</b>. Questo portale raccoglie, in modo ordinato e uniforme, tutto ciò che serve al tuo comitato.</p>
+        </div>
+
+        <div class="req">
+          <div class="ico">⚖️</div>
+          <div>
+            <h4>I cinque requisiti di legge (cumulativi)</h4>
+            <p>Devono sussistere <b>tutti</b> insieme: la mancanza anche di uno solo impedisce il riconoscimento.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct">Cosa verifica il Ministero</div>
+          <ul class="clean">
+            <li><b>Anzianità</b> — associazione costituita da almeno tre anni.</li>
+            <li><b>Diffusione territoriale</b> — presenza in almeno cinque regioni, con nuclei di associati, una sede regionale e una consistente distribuzione delle attività sul territorio.</li>
+            <li><b>Finalità programmatiche</b> — la protezione ambientale deve essere finalità centrale e prevalente nello statuto.</li>
+            <li><b>Ordinamento democratico</b> — lo statuto deve garantire un assetto interno democratico.</li>
+            <li><b>Continuità e rilevanza esterna</b> — attività ambientale svolta con continuità nel triennio, nelle medesime cinque regioni, e percepibile all'esterno.</li>
+          </ul>
+        </div>
+
+        <div class="row c2">
+          <div class="card tinted">
+            <div class="ct"><span class="tag nat">Sede nazionale</span></div>
+            <div class="cd">Predisposti una sola volta dal Legale Rappresentante ASC</div>
+            <ul class="clean">
+              <li>Istanza <b>Modello A</b> (scaricabile dopo la registrazione online sul portale MASE)</li>
+              <li>Copia autenticata dell'<b>atto costitutivo</b></li>
+              <li>Copia autentica dello <b>statuto vigente</b></li>
+              <li><b>Relazione</b> del legale rappresentante e <b>bilanci</b> del triennio</li>
+            </ul>
+          </div>
+          <div class="card tinted">
+            <div class="ct"><span class="tag reg">Comitato territoriale</span></div>
+            <div class="cd">È ciò che raccoglie questo strumento</div>
+            <ul class="clean">
+              <li>Dati e atto della <b>sede regionale</b></li>
+              <li><b>Base territoriale</b> (associati e volontari attivi)</li>
+              <li><b>Referente regionale</b> ASC e atti di nomina</li>
+              <li><b>Attività ambientali</b> per ciascun anno del triennio</li>
+              <li><b>Documenti ufficiali</b> a prova di ogni attività</li>
+            </ul>
+          </div>
+        </div>
+
+        <details class="help">
+          <summary><span class="pp">▸</span> Come si presenta poi l'istanza al MASE?</summary>
+          <div class="hc">
+            <ol style="margin:0;padding-left:18px">
+              <li style="margin-bottom:6px">La sede nazionale si <b>registra online</b> sul portale del Ministero: il sistema genera un <b>numero identificativo</b> da inserire nel Modello A.</li>
+              <li style="margin-bottom:6px">Si <b>scarica la modulistica</b> e si compila senza modifiche né loghi associativi.</li>
+              <li style="margin-bottom:6px">Si allega tutta la documentazione (compresi i dossier regionali raccolti qui) e si <b>invia per raccomandata</b> al MASE — Via Cristoforo Colombo 44, 00147 Roma.</li>
+              <li>L'istruttoria si avvia solo alla ricezione postale e protocollazione dell'istanza.</li>
+            </ol>
+            <p style="margin:12px 0 0;font-size:.8rem">Recapiti utili: <b>associazioniamb@mase.gov.it</b> · PEC <b>mase@pec.mase.gov.it</b></p>
+          </div>
+        </details>
+
+        <div class="req amber">
+          <div class="ico">💡</div>
+          <div>
+            <h4>Punto chiave per ASC</h4>
+            <p>Le attività vanno ricondotte ad <b>ASC come soggetto promotore e responsabile</b>; le associazioni affiliate operano come braccio territoriale, sotto il coordinamento del referente regionale ASC. Convenzioni, protocolli e comunicazioni dovrebbero risultare intestati o riconducibili ad ASC.</p>
+          </div>
+        </div>
+
+        <div class="foot-nav">
+          <span></span>
+          <button class="btn primary" onclick="go('sede')">Inizia la compilazione →</button>
+        </div>
+      </section>
+
+      <!-- 1 · ANAGRAFICA -->
+      <section class="section" data-sec="sede">
+        <div class="sec-head">
+          <div class="kicker">Passo 1 · Identificazione e sede</div>
+          <h2>Comitato e sede regionale</h2>
+          <p class="desc">Identifica il comitato e dimostra l'esistenza e la continuità della sede. I comitati provinciali confluiscono nel dossier della propria regione.</p>
+        </div>
+
+        <div class="card">
+          <div class="ct">Identificazione del comitato</div>
+          <div class="row c2">
+            <div class="field">
+              <label>Regione *</label>
+              <select id="f_regione"></select>
+            </div>
+            <div class="field">
+              <label>Livello del comitato *</label>
+              <select id="f_livello">
+                <option value="regionale">Comitato regionale</option>
+                <option value="provinciale">Comitato provinciale</option>
+              </select>
+            </div>
+          </div>
+          <div class="row c2">
+            <div class="field" id="provWrap" style="display:none">
+              <label>Provincia <span class="opt">(se comitato provinciale)</span></label>
+              <input type="text" id="f_provincia" placeholder="es. Roma">
+            </div>
+            <div class="field">
+              <label>Email istituzionale regionale</label>
+              <input type="email" id="f_email" placeholder="regione@asc.it">
+            </div>
+          </div>
+          <div class="field">
+            <label>Nome di chi compila e ruolo</label>
+            <input type="text" id="f_compilatore" placeholder="es. Mario Rossi — Coordinatore regionale">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct">Esistenza e continuità della sede</div>
+          <div class="cd">Allega o descrivi ciò che prova che la sede esiste e opera con continuità.</div>
+          <div class="field">
+            <label>Atto / delibera di istituzione del comitato o sede</label>
+            <input type="text" id="f_atto" placeholder="es. Delibera CdA n. 12 del 04/03/2021">
+          </div>
+          <div class="row c2">
+            <div class="field">
+              <label>Data di avvio dell'operatività</label>
+              <input type="date" id="f_dataAvvio">
+            </div>
+            <div class="field">
+              <label>Titolo d'uso dei locali <span class="opt">(opzionale)</span></label>
+              <select id="f_locali">
+                <option value="">—</option>
+                <option>Proprietà</option><option>Contratto di locazione</option>
+                <option>Comodato d'uso</option><option>Autorizzazione all'uso</option>
+                <option>Ospitalità presso affiliata</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Indirizzo attuale della sede operativa</label>
+            <input type="text" id="f_indirizzo" placeholder="Via, civico, CAP, città, provincia">
+          </div>
+          <div class="field">
+            <label>Eventuali variazioni di indirizzo nel tempo <span class="opt">(con data)</span></label>
+            <textarea id="f_variazioni" placeholder="es. Dal 2019 al 2022 in Via X; dal 2022 attuale sede in Via Y"></textarea>
+          </div>
+        </div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('intro')">← Guida</button>
+          <button class="btn primary" onclick="go('base')">Avanti · Base territoriale →</button>
+        </div>
+      </section>
+
+      <!-- 2 · BASE TERRITORIALE -->
+      <section class="section" data-sec="base">
+        <div class="sec-head">
+          <div class="kicker">Passo 2 · Presenza reale</div>
+          <h2>Base territoriale e partecipazione</h2>
+          <p class="desc">Non serve l'anagrafica completa dei soci, ma la dimostrazione di una presenza reale e operativa sul territorio, anche tramite gli associati delle affiliate.</p>
+        </div>
+        <div class="card">
+          <div class="ct">Nucleo attivo sul territorio</div>
+          <div class="row c2">
+            <div class="field">
+              <label>N. associati attivi nella regione <span class="opt">(stima)</span></label>
+              <input type="number" id="f_nAssoc" min="0" placeholder="es. 120">
+            </div>
+            <div class="field">
+              <label>N. volontari coinvolti nelle attività ambientali</label>
+              <input type="number" id="f_nVol" min="0" placeholder="es. 35">
+            </div>
+          </div>
+          <div class="field">
+            <label>Associazioni affiliate che operano sul territorio</label>
+            <textarea id="f_affiliate" placeholder="Elenca le affiliate che mettono a disposizione volontari sotto il coordinamento ASC (una per riga)"></textarea>
+            <div class="hint">Le affiliate agiscono come struttura territoriale di ASC, non come soggetti autonomi.</div>
+          </div>
+          <div class="field">
+            <label>Persone coinvolte e relativo ruolo nelle attività ambientali</label>
+            <textarea id="f_persone" placeholder="es. Giulia Bianchi — responsabile attività di pulizia spiagge; Luca Verdi — referente educazione ambientale scuole"></textarea>
+          </div>
+        </div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('sede')">← Sede</button>
+          <button class="btn primary" onclick="go('referente')">Avanti · Referente →</button>
+        </div>
+      </section>
+
+      <!-- 3 · REFERENTE -->
+      <section class="section" data-sec="referente">
+        <div class="sec-head">
+          <div class="kicker">Passo 3 · Collegamento ad ASC</div>
+          <h2>Referente regionale ASC</h2>
+          <p class="desc">Il referente rappresenta ASC sul territorio e coordina le attività. Il suo ruolo deve risultare esplicitamente collegato all'associazione istante.</p>
+        </div>
+        <div class="card">
+          <div class="ct">Dati del referente</div>
+          <div class="row c2">
+            <div class="field"><label>Nome e cognome</label><input type="text" id="f_refNome" placeholder="Nome Cognome"></div>
+            <div class="field"><label>Luogo e data di nascita <span class="opt">(opzionale)</span></label><input type="text" id="f_refNato" placeholder="es. Napoli, 12/05/1980"></div>
+          </div>
+          <div class="field"><label>Legale Rappresentante ASC <span class="opt">(firma gli atti)</span></label><input type="text" id="f_legaleRappr" placeholder="Nome Cognome del legale rappresentante nazionale"></div>
+        </div>
+        <div class="card">
+          <div class="ct">Atti che documentano l'incarico</div>
+          <div class="cd">Spunta gli atti effettivamente disponibili. Tre fac-simile sono richiamati nella guida sottostante.</div>
+          <label class="check"><input type="checkbox" id="f_refNomina"><span class="x"><b>Atto di nomina del referente regionale ASC</b><span>Documento 1 — nomina formale del legale rappresentante</span></span></label>
+          <label class="check"><input type="checkbox" id="f_refIncarico"><span class="x"><b>Incarico di coordinamento territoriale</b><span>Documento 2 — definisce compiti e raccordo con le affiliate</span></span></label>
+          <label class="check"><input type="checkbox" id="f_refRuolo"><span class="x"><b>Dichiarazione di ruolo e collegamento ad ASC</b><span>Documento 3 — chiarisce che opera sotto il coordinamento ASC</span></span></label>
+          <details class="help" style="margin-top:14px">
+            <summary><span class="pp">▸</span> Cosa deve emergere dagli atti</summary>
+            <div class="hc">Il referente coordina le attività ambientali ASC nella regione, assicura il raccordo con le affiliate, cura i rapporti con enti e istituzioni e opera sotto la direzione degli organi nazionali, <b>senza autonomia giuridica né rappresentanza legale distinta</b> da quella di ASC.</div>
+          </details>
+        </div>
+        <div class="card tinted">
+          <div class="ct">🖋️ Genera gli atti precompilati</div>
+          <div class="cd">Produce i tre documenti già compilati con i dati inseriti, pronti da stampare, firmare e allegare al dossier: <b>nomina del referente</b>, <b>incarico di coordinamento</b> e <b>dichiarazione di ruolo</b>.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn primary" onclick="genReferenteDocs()">⤓ Scarica i 3 atti (HTML/PDF)</button>
+            <button class="btn" onclick="previewReferenteDocs()">👁 Anteprima</button>
+          </div>
+          <div class="hint" id="refDocHint" style="margin-top:10px"></div>
+        </div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('base')">← Base territoriale</button>
+          <button class="btn primary" onclick="go('attivita')">Avanti · Attività →</button>
+        </div>
+      </section>
+
+      <!-- 4 · ATTIVITÀ -->
+      <section class="section" data-sec="attivita">
+        <div class="sec-head">
+          <div class="kicker">Passo 4 · Il cuore del dossier</div>
+          <h2>Attività di protezione ambientale</h2>
+          <p class="desc">Inserisci solo attività <b>ambientali</b> svolte <b>nella regione</b>. Serve almeno un'iniziativa documentata per <b>ciascuno</b> dei tre anni: è il requisito di continuità.</p>
+        </div>
+
+        <div class="card tinted" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <div style="font-size:.84rem"><b>Triennio di riferimento</b><br><span style="color:var(--muted);font-size:.78rem">Imposta i tre anni precedenti l'istanza</span></div>
+          <div style="display:flex;gap:8px;margin-left:auto">
+            <input type="number" id="y0" class="yrIn" style="width:88px" >
+            <input type="number" id="y1" class="yrIn" style="width:88px">
+            <input type="number" id="y2" class="yrIn" style="width:88px">
+          </div>
+        </div>
+
+        <div class="req amber" style="margin-top:18px">
+          <div class="ico">🚫</div>
+          <div><h4>Da non inserire</h4><p>Attività non ambientali, iniziative interne non rilevanti, eventi svolti fuori regione.</p></div>
+        </div>
+
+        <div id="years"></div>
+
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('referente')">← Referente</button>
+          <button class="btn primary" onclick="go('dichiarazione')">Avanti · Dichiarazione →</button>
+        </div>
+      </section>
+
+      <!-- 5 · DICHIARAZIONE -->
+      <section class="section" data-sec="dichiarazione">
+        <div class="sec-head">
+          <div class="kicker">Passo 5 · Attestazione</div>
+          <h2>Dichiarazione del coordinatore</h2>
+          <p class="desc">Consigliata: una breve attestazione del coordinatore regionale rafforza il dossier confermando continuità e veridicità.</p>
+        </div>
+        <div class="card">
+          <div class="ct">Attesto che…</div>
+          <label class="check"><input type="checkbox" id="f_dSede"><span class="x"><b>Continuità della sede</b><span>la sede regionale è attiva con continuità nel triennio</span></span></label>
+          <label class="check"><input type="checkbox" id="f_dAtt"><span class="x"><b>Continuità delle attività ambientali</b><span>le attività ambientali sono state svolte con continuità</span></span></label>
+          <label class="check"><input type="checkbox" id="f_dVer"><span class="x"><b>Veridicità della documentazione</b><span>i documenti trasmessi sono autentici e veritieri</span></span></label>
+          <div class="field" style="margin-top:14px">
+            <label>Firmatario della dichiarazione</label>
+            <input type="text" id="f_dFirma" placeholder="Nome Cognome — Coordinatore regionale ASC">
+          </div>
+        </div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('attivita')">← Attività</button>
+          <button class="btn primary" onclick="go('riepilogo')">Verifica completezza →</button>
+        </div>
+      </section>
+
+      <!-- 6 · RIEPILOGO -->
+      <section class="section" data-sec="riepilogo">
+        <div class="sec-head">
+          <div class="kicker">Verifica</div>
+          <h2>Stato di completezza del dossier</h2>
+          <p class="desc">Controlla i requisiti prima di trasmettere. Solo i dossier completi e coerenti potranno essere inclusi nell'istanza.</p>
+        </div>
+        <div id="checklist"></div>
+        <div class="card tinted" id="readSummary"></div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('dichiarazione')">← Dichiarazione</button>
+          <button class="btn primary" onclick="go('export')">Vai all'esportazione →</button>
+        </div>
+      </section>
+
+      <!-- 7 · EXPORT -->
+      <section class="section" data-sec="export">
+        <div class="sec-head">
+          <div class="kicker">Trasmissione</div>
+          <h2>Esporta e invia alla sede nazionale</h2>
+          <p class="desc">Genera il fascicolo da trasmettere ad ASC. Allega poi i file dei documenti, rinominati secondo la convenzione indicata.</p>
+        </div>
+
+        <div class="card" id="submitCard" style="margin-bottom:18px;border:1px solid var(--green-2);background:var(--green-soft)">
+          <div class="ct" style="color:var(--green)">📨 Invio diretto alla sede nazionale</div>
+          <p class="desc" style="margin:6px 0 14px">Trasmette automaticamente tutti i dati di questo dossier al registro unico della sede nazionale. Puoi inviare più volte, anche per correggere: ogni invio viene registrato e conservato (l'ultimo è quello con data più recente).</p>
+          <button class="btn primary" id="sendBtn" onclick="submitToServer()">📨 Invia alla sede nazionale</button>
+          <div id="sendHint" style="font-size:.8rem;color:var(--muted);margin-top:10px"></div>
+        </div>
+
+        <div class="req">
+          <div class="ico">🗂️</div>
+          <div><h4>Convenzione per i nomi dei file</h4><p>Rinomina ogni documento così: <b>Regione_Anno_Attività_Ente.pdf</b> — pronto per la cartella .zip regionale.</p></div>
+        </div>
+
+        <div class="export-grid">
+          <div class="exp">
+            <div class="ei">📄</div>
+            <h4>Scheda regionale (HTML/PDF)</h4>
+            <p>Documento stampabile con tutti i dati, l'elenco attività e i documenti probatori.</p>
+            <button class="btn primary" onclick="downloadReport()">⤓ Scarica scheda</button>
+          </div>
+          <div class="exp">
+            <div class="ei">🧾</div>
+            <h4>Dati strutturati (JSON)</h4>
+            <p>File di backup per la sede nazionale: consente di consolidare i dossier delle regioni.</p>
+            <button class="btn" onclick="downloadJSON()">⤓ Scarica JSON</button>
+          </div>
+          <div class="exp">
+            <div class="ei">🏷️</div>
+            <h4>Elenco nomi file suggeriti</h4>
+            <p>La lista dei documenti da allegare, già rinominati secondo la convenzione.</p>
+            <button class="btn" onclick="copyFilenames()">⧉ Copia elenco</button>
+          </div>
+          <div class="exp">
+            <div class="ei">✉️</div>
+            <h4>Riepilogo per email</h4>
+            <p>Sintesi testuale da incollare nel messaggio di trasmissione.</p>
+            <button class="btn" onclick="copySummary()">⧉ Copia riepilogo</button>
+          </div>
+          <div class="exp">
+            <div class="ei">🖋️</div>
+            <h4>Atti del referente</h4>
+            <p>Nomina, incarico di coordinamento e dichiarazione di ruolo, precompilati e pronti da firmare.</p>
+            <button class="btn" onclick="genReferenteDocs()">⤓ Scarica i 3 atti</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="ct">Checklist finale di invio</div>
+          <ul class="clean">
+            <li>Documenti rinominati <b>Regione_Anno_Attività_Ente.pdf</b></li>
+            <li>Almeno un documento ufficiale per ciascuna attività</li>
+            <li>Materiale pronto per cartella compressa <b>.zip</b></li>
+            <li>Scheda regionale + JSON allegati alla trasmissione</li>
+          </ul>
+        </div>
+        <div class="foot-nav">
+          <button class="btn ghost" onclick="go('riepilogo')">← Verifica</button>
+          <span></span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+//=================== CONFIGURAZIONE ===================//
+// Incolla qui l'URL dell'app web di Google Apps Script (vedi GUIDA_GOOGLE_SHEETS.md).
+// Finché resta vuoto, il pulsante "Invia alla sede nazionale" avvisa che non è configurato.
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxdM0zVrKDK14EyWxCHkn2YHGdixLBmfY773Sbv3UuIJtqxszV00XC4o-kIgVIzJbuX/exec";
+
+//=================== DATA LAYER ===================//
+const REGIONI=["Abruzzo","Basilicata","Calabria","Campania","Emilia-Romagna","Friuli-Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","Trentino-Alto Adige","Umbria","Valle d'Aosta","Veneto"];
+const DOC_TIPI=["Convenzione / Protocollo d'intesa","Lettera o attestazione di ente/scuola/istituzione","Locandina o programma ufficiale (con data)","Comunicazione formale / atto amministrativo","Altro documento ufficiale"];
+const SECTIONS=[
+  {id:"intro",label:"Guida",ix:"i"},
+  {id:"sede",label:"Sede regionale",ix:"1"},
+  {id:"base",label:"Base territoriale",ix:"2"},
+  {id:"referente",label:"Referente ASC",ix:"3"},
+  {id:"attivita",label:"Attività triennio",ix:"4"},
+  {id:"dichiarazione",label:"Dichiarazione",ix:"5"},
+  {id:"riepilogo",label:"Verifica",ix:"✓"},
+  {id:"export",label:"Esporta",ix:"⤓"},
+];
+const yNow=new Date().getFullYear();
+let S={
+  regione:"",livello:"regionale",provincia:"",email:"",compilatore:"",legaleRappr:"",
+  atto:"",dataAvvio:"",locali:"",indirizzo:"",variazioni:"",
+  nAssoc:"",nVol:"",affiliate:"",persone:"",
+  refNome:"",refNato:"",refNomina:false,refIncarico:false,refRuolo:false,
+  years:[yNow-3,yNow-2,yNow-1],
+  attivita:[],
+  dSede:false,dAtt:false,dVer:false,dFirma:""
+};
+const KEY="asc_mase_dossier_v1";
+let memFallback=null, saveTimer=null;
+
+// Persistenza su sito web reale: usa localStorage del browser del compilatore.
+async function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){ S=Object.assign(S,JSON.parse(raw)); }
+  }catch(e){ if(memFallback) S=Object.assign(S,memFallback); }
+}
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    const data=JSON.stringify(S); memFallback=JSON.parse(data);
+    try{
+      localStorage.setItem(KEY,data);
+      flashSave("Salvato · "+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}));
+    }catch(e){ flashSave("Salvato in sessione"); }
+  },400);
+}
+function flashSave(t){const e=document.getElementById('saveTxt'); if(e) e.textContent=t;}
+
+//=================== UTIL ===================//
+const $=id=>document.getElementById(id);
+function slug(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40)||"--";}
+function uid(){return Math.random().toString(36).slice(2,9);}
+function toast(m){const t=$('toast');t.textContent="✓ "+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function fileName(a){const reg=slug(S.regione||"Regione");return `${reg}_${a.anno||"Anno"}_${slug(a.titolo||"Attivita")}_${slug(a.ente||"Ente")}.pdf`;}
+
+//=================== NAV ===================//
+function buildNav(){
+  const nav=$('nav');nav.innerHTML="";
+  SECTIONS.forEach(s=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<button data-go="${s.id}"><span class="ix">${s.ix}</span>${s.label}<span class="dot" data-dot="${s.id}"></span></button>`;
+    nav.appendChild(li);
+  });
+  nav.querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.go));
+}
+function go(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.dataset.sec===id));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+  if(id==='riepilogo')renderChecklist();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+//=================== BIND FORM ===================//
+function bind(id,key,type){
+  const el=$(id); if(!el)return;
+  if(type==='check'){el.checked=!!S[key];el.onchange=()=>{S[key]=el.checked;save();updateMeta();};}
+  else{el.value=S[key]??"";el.oninput=()=>{S[key]=el.value;save();updateMeta();};}
+}
+function initForm(){
+  const rsel=$('f_regione');
+  rsel.innerHTML='<option value="">— seleziona —</option>'+REGIONI.map(r=>`<option ${S.regione===r?'selected':''}>${r}</option>`).join('');
+  rsel.onchange=()=>{S.regione=rsel.value;save();updateMeta();renderYears();};
+  bind('f_livello','livello');
+  $('f_livello').onchange=()=>{S.livello=$('f_livello').value;$('provWrap').style.display=S.livello==='provinciale'?'':'none';save();updateMeta();};
+  $('provWrap').style.display=S.livello==='provinciale'?'':'none';
+  bind('f_provincia','provincia');bind('f_email','email');bind('f_compilatore','compilatore');bind('f_legaleRappr','legaleRappr');
+  bind('f_atto','atto');bind('f_dataAvvio','dataAvvio');bind('f_locali','locali');
+  bind('f_indirizzo','indirizzo');bind('f_variazioni','variazioni');
+  bind('f_nAssoc','nAssoc');bind('f_nVol','nVol');bind('f_affiliate','affiliate');bind('f_persone','persone');
+  bind('f_refNome','refNome');bind('f_refNato','refNato');
+  bind('f_refNomina','refNomina','check');bind('f_refIncarico','refIncarico','check');bind('f_refRuolo','refRuolo','check');
+  bind('f_dSede','dSede','check');bind('f_dAtt','dAtt','check');bind('f_dVer','dVer','check');bind('f_dFirma','dFirma');
+  ['y0','y1','y2'].forEach((id,i)=>{const el=$(id);el.value=S.years[i];el.onchange=()=>{S.years[i]=parseInt(el.value)||S.years[i];save();renderYears();};});
+}
+function updateMeta(){
+  const reg=S.regione||"— da impostare";
+  const lvl=S.livello==='provinciale'&&S.provincia?` · Prov. ${S.provincia}`:"";
+  $('identTop').innerHTML=`${S.livello==='provinciale'?'Comitato provinciale':'Regione'} <span class="reg">${reg}${lvl}</span>`;
+  computeReadiness();
+}
+
+//=================== ACTIVITIES ===================//
+function renderYears(){
+  const host=$('years');host.innerHTML="";
+  S.years.forEach(yr=>{
+    const acts=S.attivita.filter(a=>a.anno==yr);
+    const hasDoc=acts.length>0&&acts.every(a=>a.docs&&a.docs.length>0);
+    const ok=acts.length>0;
+    const block=document.createElement('div');block.className='year-block';
+    block.innerHTML=`<div class="year-head"><span class="yr">${yr}</span>
+      <span class="badge ${ok?'ok':''}">${acts.length} attività</span><span class="line"></span></div>`;
+    acts.forEach(a=>block.appendChild(actCard(a)));
+    const add=document.createElement('button');add.className='addbtn';add.textContent='+ Aggiungi attività al '+yr;
+    add.onclick=()=>{S.attivita.push({id:uid(),anno:yr,titolo:"",luogo:"",data:"",finalita:"",descrizione:"",ente:"",docs:[]});save();renderYears();computeReadiness();
+      setTimeout(()=>{const el=document.querySelector(`[data-act="${S.attivita[S.attivita.length-1].id}"]`);if(el)el.classList.add('open');},30);};
+    block.appendChild(add);
+    host.appendChild(block);
+  });
+}
+function actCard(a){
+  const wrap=document.createElement('div');wrap.className='act';wrap.dataset.act=a.id;
+  const docOk=a.docs&&a.docs.length>0;
+  wrap.innerHTML=`
+    <div class="act-top">
+      <span class="chev">▸</span>
+      <span class="ttl ${a.titolo?'':'empty'}">${a.titolo||'Nuova attività — da compilare'}</span>
+      <span class="docpill ${docOk?'ok':''}">${(a.docs||[]).length} doc</span>
+      <button class="mini" title="Elimina">🗑</button>
+    </div>
+    <div class="act-body">
+      <div class="field"><label>Titolo dell'attività</label><input type="text" data-f="titolo" value="${esc(a.titolo)}" placeholder="es. Progetto educazione ambientale nelle scuole"></div>
+      <div class="row c2">
+        <div class="field"><label>Luogo</label><input type="text" data-f="luogo" value="${esc(a.luogo)}" placeholder="Comune / località"></div>
+        <div class="field"><label>Data o periodo</label><input type="text" data-f="data" value="${esc(a.data)}" placeholder="es. marzo–maggio ${a.anno}"></div>
+      </div>
+      <div class="field"><label>Finalità ambientale</label><input type="text" data-f="finalita" value="${esc(a.finalita)}" placeholder="es. sensibilizzazione su raccolta differenziata"></div>
+      <div class="field"><label>Breve descrizione</label><textarea data-f="descrizione" placeholder="Max 5–6 righe">${esc(a.descrizione)}</textarea></div>
+      <div class="field"><label>Ente / istituzione coinvolta</label><input type="text" data-f="ente" value="${esc(a.ente)}" placeholder="es. Comune di Roma"></div>
+      <div class="divider"></div>
+      <div style="font-weight:600;font-size:.82rem;margin-bottom:8px">Documenti a prova <span style="color:var(--err)">(almeno 1 obbligatorio)</span></div>
+      <div class="doc-list" data-docs></div>
+      <button class="addbtn" data-adddoc style="margin-top:4px">+ Aggiungi documento</button>
+    </div>`;
+  // toggle
+  wrap.querySelector('.act-top').onclick=(e)=>{if(e.target.closest('.mini'))return;wrap.classList.toggle('open');};
+  wrap.querySelector('.mini').onclick=()=>{S.attivita=S.attivita.filter(x=>x.id!==a.id);save();renderYears();computeReadiness();};
+  wrap.querySelectorAll('[data-f]').forEach(inp=>{
+    inp.oninput=()=>{a[inp.dataset.f]=inp.value;save();
+      if(inp.dataset.f==='titolo'){const t=wrap.querySelector('.ttl');t.textContent=inp.value||'Nuova attività — da compilare';t.classList.toggle('empty',!inp.value);}
+      renderDocs(wrap,a);};
+  });
+  // doc add
+  wrap.querySelector('[data-adddoc]').onclick=()=>{a.docs=a.docs||[];a.docs.push({tipo:DOC_TIPI[0],desc:""});save();renderDocs(wrap,a);refreshPill(wrap,a);computeReadiness();};
+  renderDocs(wrap,a);
+  return wrap;
+}
+function renderDocs(wrap,a){
+  const host=wrap.querySelector('[data-docs]');host.innerHTML="";
+  (a.docs||[]).forEach((d,i)=>{
+    const row=document.createElement('div');row.className='doc';
+    row.innerHTML=`<div class="dt" style="flex:1">
+        <select data-dt style="margin-bottom:6px">${DOC_TIPI.map(t=>`<option ${d.tipo===t?'selected':''}>${t}</option>`).join('')}</select>
+        <input type="text" data-dd value="${esc(d.desc)}" placeholder="Riferimento (es. Prot. n. 245 del 10/04)">
+        <div class="fname">↳ ${fileName(a)}</div>
+      </div><button class="mini" title="Rimuovi">✕</button>`;
+    row.querySelector('[data-dt]').onchange=e=>{d.tipo=e.target.value;save();};
+    row.querySelector('[data-dd]').oninput=e=>{d.desc=e.target.value;save();};
+    row.querySelector('.mini').onclick=()=>{a.docs.splice(i,1);save();renderDocs(wrap,a);refreshPill(wrap,a);computeReadiness();};
+    host.appendChild(row);
+  });
+}
+function refreshPill(wrap,a){const p=wrap.querySelector('.docpill');const n=(a.docs||[]).length;p.textContent=n+' doc';p.classList.toggle('ok',n>0);}
+function esc(s){return (s||"").replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+//=================== READINESS ===================//
+function reqs(){
+  const acts=S.attivita;
+  const yearCov=S.years.map(y=>{const ya=acts.filter(a=>a.anno==y);return{y,n:ya.length,docs:ya.length>0&&ya.every(a=>(a.docs||[]).length>0)};});
+  const allYears=yearCov.every(c=>c.n>0);
+  const allDocs=acts.length>0&&acts.every(a=>(a.docs||[]).length>0);
+  return [
+    {ok:!!(S.regione),t:"Regione identificata",d:S.regione||"Seleziona la regione del comitato"},
+    {ok:!!(S.atto&&S.indirizzo&&S.email),t:"Sede regionale documentata",d:"Atto di istituzione, indirizzo ed email istituzionale"},
+    {ok:!!(S.nAssoc||S.persone),t:"Base territoriale indicata",d:"Associati attivi e/o persone coinvolte"},
+    {ok:!!(S.refNome&&S.refNomina),t:"Referente nominato",d:"Nominativo e atto di nomina ASC"},
+    {ok:allYears,t:"Continuità nel triennio",d:`Almeno un'attività per ciascun anno (${S.years.join(', ')})`},
+    {ok:allDocs&&acts.length>0,t:"Documenti probatori completi",d:"Ogni attività ha almeno un documento ufficiale"},
+    {ok:!!(S.dSede&&S.dAtt&&S.dVer&&S.dFirma),t:"Dichiarazione del coordinatore",d:"Attestazione firmata (consigliata)"},
+  ];
+}
+function computeReadiness(){
+  const r=reqs();const done=r.filter(x=>x.ok).length;const pc=Math.round(done/r.length*100);
+  $('gauge').style.width=pc+'%';$('pctxt').textContent=pc;
+  $('pcsub').textContent=pc===100?' · pronto da inviare':pc>0?' · in corso':' · da avviare';
+  // nav dots
+  const map={
+    sede:!!(S.regione&&S.atto&&S.indirizzo&&S.email),
+    base:!!(S.nAssoc||S.persone),
+    referente:!!(S.refNome&&S.refNomina),
+    attivita:S.years.every(y=>S.attivita.some(a=>a.anno==y))&&S.attivita.every(a=>(a.docs||[]).length>0)&&S.attivita.length>0,
+    dichiarazione:!!(S.dSede&&S.dAtt&&S.dVer&&S.dFirma)
+  };
+  const partial={
+    sede:!!(S.regione||S.atto||S.indirizzo),base:false,referente:!!S.refNome,
+    attivita:S.attivita.length>0,dichiarazione:!!(S.dSede||S.dAtt||S.dVer)
+  };
+  document.querySelectorAll('[data-dot]').forEach(d=>{
+    const id=d.dataset.dot;d.classList.remove('ok','partial');
+    if(map[id])d.classList.add('ok');else if(partial[id])d.classList.add('partial');
+  });
+}
+function renderChecklist(){
+  const host=$('checklist');host.innerHTML="";
+  reqs().forEach(r=>{
+    const el=document.createElement('div');el.className='rchk '+(r.ok?'ok':'no');
+    el.innerHTML=`<div class="st">${r.ok?'✓':'!'}</div><div class="rt"><b>${r.t}</b><span>${r.d}</span></div>`;
+    host.appendChild(el);
+  });
+  const r=reqs();const done=r.filter(x=>x.ok).length;const pc=Math.round(done/r.length*100);
+  const core=reqs().slice(0,6).every(x=>x.ok);
+  $('readSummary').innerHTML=core
+   ?`<div class="ct" style="color:var(--green)">✓ Dossier idoneo all'inclusione</div><div class="cd">Tutti i requisiti sostanziali risultano soddisfatti (${pc}%). Procedi all'esportazione e trasmetti alla sede nazionale.</div>`
+   :`<div class="ct" style="color:var(--terra)">⚠ Dossier ancora incompleto</div><div class="cd">Mancano elementi essenziali: completa le voci contrassegnate con "!". Solo le regioni con documentazione completa e coerente potranno essere incluse nell'istanza al MASE.</div>`;
+}
+
+//=================== EXPORT ===================//
+function reportHTML(){
+  const a=S.attivita;
+  const actBy=y=>a.filter(x=>x.anno==y).map(x=>`
+    <div style="border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin:8px 0">
+      <div style="font-weight:700">${esc(x.titolo)||'(senza titolo)'}</div>
+      <div style="font-size:13px;color:#555">${esc(x.luogo)} · ${esc(x.data)}</div>
+      <div style="font-size:13px;margin-top:4px"><b>Finalità:</b> ${esc(x.finalita)}</div>
+      <div style="font-size:13px;margin-top:2px">${esc(x.descrizione)}</div>
+      <div style="font-size:13px;margin-top:2px"><b>Ente:</b> ${esc(x.ente)}</div>
+      <div style="font-size:12px;margin-top:6px"><b>Documenti:</b><ul style="margin:4px 0 0">${(x.docs||[]).map(d=>`<li>${esc(d.tipo)} — ${esc(d.desc)} <code>${fileName(x)}</code></li>`).join('')||'<li style="color:#b5562c">nessun documento allegato</li>'}</ul></div>
+    </div>`).join('');
+  const r=reqs();
+  return `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><title>Scheda ASC ${esc(S.regione)}</title>
+  <style>body{font-family:Georgia,serif;max-width:820px;margin:30px auto;padding:0 24px;color:#222;line-height:1.5}
+  h1{font-size:24px;border-bottom:3px solid #244C36;padding-bottom:8px}h2{font-size:17px;color:#244C36;margin-top:26px}
+  .kv{display:grid;grid-template-columns:200px 1fr;gap:4px 12px;font-size:14px}.kv dt{color:#777}
+  table{width:100%;border-collapse:collapse;font-size:13px}td,th{border:1px solid #ccc;padding:6px 8px;text-align:left}
+  code{background:#f3efe4;padding:1px 5px;border-radius:4px;font-size:11px}.ok{color:#3E7C52}.no{color:#b5562c}
+  @media print{body{margin:0}}</style></head><body>
+  <h1>Scheda territoriale ASC — ${esc(S.regione)||'Regione'}</h1>
+  <p style="font-size:13px;color:#666">Documento di supporto all'istanza di riconoscimento come Associazione di protezione ambientale (art. 13 L. 349/1986) · ${S.livello==='provinciale'?'Comitato provinciale '+esc(S.provincia):'Comitato regionale'} · Generato il ${new Date().toLocaleDateString('it-IT')}</p>
+  <h2>1 · Sede regionale</h2><dl class="kv">
+   <dt>Email istituzionale</dt><dd>${esc(S.email)}</dd>
+   <dt>Atto di istituzione</dt><dd>${esc(S.atto)}</dd>
+   <dt>Avvio operatività</dt><dd>${esc(S.dataAvvio)}</dd>
+   <dt>Indirizzo sede</dt><dd>${esc(S.indirizzo)}</dd>
+   <dt>Titolo d'uso locali</dt><dd>${esc(S.locali)}</dd>
+   <dt>Variazioni</dt><dd>${esc(S.variazioni)||'—'}</dd>
+   <dt>Compilatore</dt><dd>${esc(S.compilatore)}</dd></dl>
+  <h2>2 · Base territoriale</h2><dl class="kv">
+   <dt>Associati attivi</dt><dd>${esc(S.nAssoc)||'—'}</dd>
+   <dt>Volontari</dt><dd>${esc(S.nVol)||'—'}</dd>
+   <dt>Affiliate sul territorio</dt><dd>${esc(S.affiliate).replace(/\n/g,'<br>')||'—'}</dd>
+   <dt>Persone e ruoli</dt><dd>${esc(S.persone).replace(/\n/g,'<br>')||'—'}</dd></dl>
+  <h2>3 · Referente regionale ASC</h2><dl class="kv">
+   <dt>Nominativo</dt><dd>${esc(S.refNome)}</dd><dt>Nascita</dt><dd>${esc(S.refNato)||'—'}</dd>
+   <dt>Atto di nomina</dt><dd>${S.refNomina?'✓ presente':'—'}</dd>
+   <dt>Incarico coordinamento</dt><dd>${S.refIncarico?'✓ presente':'—'}</dd>
+   <dt>Dichiarazione di ruolo</dt><dd>${S.refRuolo?'✓ presente':'—'}</dd></dl>
+  <h2>4 · Attività di protezione ambientale (triennio ${S.years.join(' · ')})</h2>
+  ${S.years.map(y=>`<h3 style="font-size:15px;color:#B5562C">${y}</h3>${actBy(y)||'<p style="color:#b5562c;font-size:13px">Nessuna attività registrata per questo anno.</p>'}`).join('')}
+  <h2>5 · Dichiarazione del coordinatore</h2>
+  <p style="font-size:13px">Continuità sede: ${S.dSede?'✓':'—'} · Continuità attività: ${S.dAtt?'✓':'—'} · Veridicità: ${S.dVer?'✓':'—'}<br>Firmatario: <b>${esc(S.dFirma)||'—'}</b></p>
+  <h2>Stato requisiti</h2><table><tr><th>Requisito</th><th>Stato</th></tr>
+  ${r.map(x=>`<tr><td>${x.t}</td><td class="${x.ok?'ok':'no'}">${x.ok?'Soddisfatto':'Da completare'}</td></tr>`).join('')}</table>
+  </body></html>`;
+}
+function dl(name,content,type){
+  const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function downloadReport(){dl(`Scheda_ASC_${slug(S.regione)||'Regione'}.html`,reportHTML(),'text/html');toast("Scheda scaricata");}
+function downloadJSON(){dl(`Dossier_ASC_${slug(S.regione)||'Regione'}.json`,JSON.stringify(S,null,2),'application/json');toast("JSON scaricato");}
+
+//=================== INVIO ALLA SEDE NAZIONALE ===================//
+function submissionKey(){
+  // chiave stabile per regione (+ provincia se comitato provinciale): permette l'aggiornamento senza duplicati
+  return slug(S.livello==='provinciale' ? (S.regione+'-'+S.provincia) : S.regione);
+}
+function buildPayload(){
+  const acts=S.attivita.reduce((n,a)=>n+1,0);
+  const docs=S.attivita.reduce((n,a)=>n+(a.docs||[]).length,0);
+  return {
+    key: submissionKey(),
+    inviato_il: new Date().toISOString(),
+    n_attivita: acts,
+    n_documenti: docs,
+    dati: S
+  };
+}
+async function submitToServer(){
+  const btn=$('sendBtn'), hint=$('sendHint');
+  if(!ENDPOINT_URL){
+    hint.innerHTML='<span style="color:var(--err)">⚠ Invio non ancora configurato.</span> La sede nazionale deve incollare l\'URL del Google Sheet nel file (vedi guida). Nel frattempo puoi usare “Scarica JSON” qui sotto e inviarlo via email.';
+    return;
+  }
+  if(!S.regione){
+    hint.innerHTML='<span style="color:var(--err)">⚠ Seleziona prima la regione (sezione “Sede regionale”).</span>';
+    return;
+  }
+  btn.disabled=true; const old=btn.textContent; btn.textContent='Invio in corso…';
+  hint.textContent='';
+  try{
+    // Content-Type text/plain => richiesta "semplice", nessun preflight CORS verso Apps Script
+    const res=await fetch(ENDPOINT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(buildPayload()),
+      redirect:'follow'
+    });
+    let ok=res.ok;
+    try{ const j=await res.json(); ok = ok && j && j.ok!==false; }catch(_){ /* risposta non leggibile: assumiamo inviato */ }
+    if(ok){
+      hint.innerHTML='<span style="color:var(--ok)">✓ Invio riuscito.</span> I dati sono stati registrati nel foglio della sede nazionale ('+new Date().toLocaleString('it-IT')+'). Se correggi qualcosa puoi reinviare: verrà aggiunto come nuovo invio.';
+      toast("Inviato alla sede nazionale");
+    }else{
+      throw new Error('Risposta non valida');
+    }
+  }catch(e){
+    hint.innerHTML='<span style="color:var(--err)">⚠ Invio non riuscito.</span> Controlla la connessione e riprova. In alternativa scarica il <b>JSON</b> qui sotto e invialo via email alla sede nazionale.';
+    toast("Invio non riuscito");
+  }finally{
+    btn.disabled=false; btn.textContent=old;
+  }
+}
+function copyFilenames(){
+  const lines=S.attivita.flatMap(a=>(a.docs||[]).map(()=>fileName(a)));
+  const uniq=[...new Set(lines)];
+  const txt=uniq.length?uniq.join('\n'):'Nessun documento ancora inserito.';
+  navigator.clipboard?.writeText(txt).then(()=>toast(uniq.length+" nomi file copiati"),()=>toast("Copia non riuscita"));
+}
+function copySummary(){
+  const acts=S.attivita.length;const docs=S.attivita.reduce((n,a)=>n+(a.docs||[]).length,0);
+  const txt=`Dossier territoriale ASC — ${S.regione||'(regione)'}\n`+
+   `${S.livello==='provinciale'?'Comitato provinciale '+S.provincia:'Comitato regionale'}\n`+
+   `Referente: ${S.refNome||'—'}\nSede: ${S.indirizzo||'—'}\n`+
+   `Triennio ${S.years.join(', ')} — ${acts} attività, ${docs} documenti probatori.\n`+
+   `In allegato: scheda regionale (HTML) + dati (JSON) + ${docs} file rinominati.`;
+  navigator.clipboard?.writeText(txt).then(()=>toast("Riepilogo copiato"),()=>toast("Copia non riuscita"));
+}
+
+//=================== ATTI REFERENTE ===================//
+function refDocsHTML(){
+  const reg=esc(S.regione)||"__________";
+  const nome=esc(S.refNome)||"[Nome e Cognome]";
+  const lr=esc(S.legaleRappr)||"[Nome e Cognome]";
+  const nato=esc(S.refNato)||"_________";
+  const oggi=new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
+  const luogoData=`__________, ${oggi}`;
+  const css=`<style>
+    @page{margin:26mm 24mm}
+    body{font-family:"Times New Roman",Georgia,serif;color:#1a1a1a;line-height:1.6;max-width:760px;margin:24px auto;padding:0 28px}
+    .doc{page-break-after:always}
+    .doc:last-child{page-break-after:auto}
+    .head{text-align:center;border-bottom:2px solid #244C36;padding-bottom:10px;margin-bottom:8px}
+    .head .org{font-size:22px;font-weight:700;letter-spacing:1px;color:#244C36}
+    .head .sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#777;margin-top:3px}
+    h2{font-size:16px;text-align:center;margin:26px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+    .reg{text-align:center;font-size:13px;color:#555;margin-bottom:22px}
+    p{font-size:14px;text-align:justify;margin:10px 0}
+    .center{text-align:center;font-weight:700;letter-spacing:.08em;font-size:15px;margin:16px 0}
+    ul{font-size:14px}li{margin:5px 0}
+    .sign{margin-top:46px;display:flex;justify-content:space-between;font-size:13px}
+    .sign .b{text-align:center;min-width:230px}
+    .sign .ln{border-top:1px solid #333;margin-top:40px;padding-top:5px}
+    .ld{margin-top:34px;font-size:13px;color:#444}
+    .note{font-size:10px;color:#999;text-align:center;margin-top:14px}
+    @media print{body{margin:0}.note{display:none}}
+  </style>`;
+  const head=`<div class="head"><div class="org">ASC</div><div class="sub">Associazione di protezione ambientale</div></div>`;
+
+  // DOCUMENTO 1 — NOMINA
+  const d1=`<div class="doc">${head}
+    <h2>Atto di nomina del Referente regionale ASC</h2>
+    <div class="reg">Regione ${reg}</div>
+    <p>Il sottoscritto <b>${lr}</b>, in qualità di Legale Rappresentante dell'Associazione ASC,</p>
+    <p style="text-align:center;font-style:italic">premesso che</p>
+    <ul>
+      <li>l'Associazione opera su base nazionale mediante una rete di strutture territoriali;</li>
+      <li>per lo svolgimento delle attività istituzionali è necessario assicurare il coordinamento a livello regionale;</li>
+    </ul>
+    <p class="center">NOMINA</p>
+    <p>il/la Sig./Sig.ra <b>${nome}</b>, nato/a a ${nato}, quale <b>Referente regionale ASC per la Regione ${reg}</b>.</p>
+    <p>Il Referente regionale rappresenta l'Associazione ASC a livello territoriale, nel rispetto dello statuto e degli indirizzi degli organi nazionali.</p>
+    <p>La presente nomina ha effetto dalla data odierna e resta valida fino a revoca o sostituzione.</p>
+    <div class="ld">${luogoData}</div>
+    <div class="sign"><div class="b"><div class="ln">Il Legale Rappresentante ASC</div></div></div>
+    <div class="note">Documento generato dal portale ASC — da stampare e sottoscrivere</div>
+  </div>`;
+
+  // DOCUMENTO 2 — INCARICO
+  const d2=`<div class="doc">${head}
+    <h2>Incarico di coordinamento territoriale</h2>
+    <div class="reg">Regione ${reg}</div>
+    <p>Con il presente atto, l'Associazione ASC conferisce al/alla Sig./Sig.ra <b>${nome}</b>, in qualità di Referente regionale, l'incarico di coordinamento delle attività di protezione ambientale svolte nel territorio della Regione ${reg}.</p>
+    <p>In particolare, il Referente regionale:</p>
+    <ul>
+      <li>coordina le attività ambientali promosse da ASC nella regione;</li>
+      <li>assicura il raccordo operativo con le associazioni affiliate e i soggetti collaboratori;</li>
+      <li>supervisiona la partecipazione degli associati e dei volontari alle iniziative territoriali;</li>
+      <li>cura i rapporti con enti locali, istituzioni e soggetti terzi nell'ambito delle attività promosse da ASC;</li>
+      <li>opera sotto la direzione e la responsabilità degli organi nazionali dell'Associazione.</li>
+    </ul>
+    <p>L'incarico non comporta autonomia giuridica né rappresentanza legale distinta da quella dell'Associazione ASC.</p>
+    <div class="ld">${luogoData}</div>
+    <div class="sign">
+      <div class="b"><div class="ln">Il Legale Rappresentante ASC</div></div>
+      <div class="b"><div class="ln">Il Referente regionale (per accettazione)</div></div>
+    </div>
+    <div class="note">Documento generato dal portale ASC — da stampare e sottoscrivere</div>
+  </div>`;
+
+  // DOCUMENTO 3 — DICHIARAZIONE
+  const d3=`<div class="doc">${head}
+    <h2>Dichiarazione sul ruolo del Referente regionale</h2>
+    <div class="reg">Regione ${reg}</div>
+    <p>L'Associazione ASC dichiara che il/la Sig./Sig.ra <b>${nome}</b>, nominato/a Referente regionale per la Regione ${reg}, svolge il proprio incarico esclusivamente nell'ambito dell'organizzazione e sotto il coordinamento dell'Associazione ASC.</p>
+    <p>Le attività di protezione ambientale realizzate nel territorio regionale:</p>
+    <ul>
+      <li>sono promosse e riconducibili all'Associazione ASC;</li>
+      <li>vengono svolte con il supporto delle associazioni affiliate e dei loro associati;</li>
+      <li>sono coordinate dal Referente regionale in qualità di incaricato ASC;</li>
+      <li>restano sotto la responsabilità organizzativa e istituzionale dell'Associazione istante.</li>
+    </ul>
+    <p>La presente dichiarazione è resa ai fini della dimostrazione della struttura territoriale e della continuità dell'azione di protezione ambientale dell'Associazione ASC.</p>
+    <div class="ld">${luogoData}</div>
+    <div class="sign"><div class="b"><div class="ln">Il Legale Rappresentante ASC</div></div></div>
+    <div class="note">Documento generato dal portale ASC — da stampare e sottoscrivere</div>
+  </div>`;
+
+  return `<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><title>Atti referente ASC — ${reg}</title>${css}</head><body>${d1}${d2}${d3}</body></html>`;
+}
+function refDocReady(){
+  const missing=[];
+  if(!S.regione)missing.push("regione");
+  if(!S.refNome)missing.push("nome del referente");
+  if(!S.legaleRappr)missing.push("legale rappresentante");
+  return missing;
+}
+function genReferenteDocs(){
+  const m=refDocReady();
+  dl(`Atti_Referente_ASC_${slug(S.regione)||'Regione'}.html`,refDocsHTML(),'text/html');
+  if(m.length){toast("Atti scaricati · completa: "+m.join(", "));}
+  else{toast("Tre atti scaricati");}
+  const h=$('refDocHint');if(h)h.textContent=m.length?("Generati con segnaposto da completare a mano: "+m.join(", ")+"."):"Atti generati con tutti i dati. Stampa, firma e allega al dossier.";
+}
+function previewReferenteDocs(){
+  const w=window.open('','_blank');
+  if(w){w.document.write(refDocsHTML());w.document.close();}
+  else{toast("Anteprima bloccata · usa Scarica");}
+}
+
+//=================== RESET ===================//
+$('resetBtn').onclick=async()=>{
+  if(!confirm("Azzerare tutti i dati di questo dossier? L'operazione non è reversibile."))return;
+  S={regione:"",livello:"regionale",provincia:"",email:"",compilatore:"",legaleRappr:"",atto:"",dataAvvio:"",locali:"",indirizzo:"",variazioni:"",
+    nAssoc:"",nVol:"",affiliate:"",persone:"",refNome:"",refNato:"",refNomina:false,refIncarico:false,refRuolo:false,
+    years:[yNow-3,yNow-2,yNow-1],attivita:[],dSede:false,dAtt:false,dVer:false,dFirma:""};
+  memFallback=null;try{localStorage.removeItem(KEY);}catch(e){}
+  initForm();renderYears();updateMeta();go('intro');toast("Dossier azzerato");
+};
+
+//=================== INIT ===================//
+(async function(){
+  buildNav();
+  await load();
+  initForm();renderYears();updateMeta();computeReadiness();
+})();
+</script>
+</body>
+</html>
